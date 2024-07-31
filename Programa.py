@@ -1,27 +1,21 @@
 import Datos as datos
 from datetime import datetime
 from os import system
+import time
 
 fecha: datetime = datetime.now()
 fechaMostrar = fecha.strftime('%d-%m-%Y')
 
-def inicio():
+def menu():
 
     system("cls")
 
-    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
-    print("\t\tActualizando datos...")
-    
-    datos.obtenerDatosGenerales(fecha)
-
-    print("\t\tDatos ya actualizados")
-    system("cls")
-    
     print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
     print("1. Realizar prediccion")
     print("2. Predicciones automaticas")
     print("3. Lista de predicciones")
-    print("4. Salir")
+    print("4. Actualizar datos")
+    print("5. Salir")
 
     seleccion = input()
     system("cls")
@@ -38,24 +32,47 @@ def inicio():
 
         input()
 
-    elif seleccion == '4' or seleccion.lower() == 'salir' or seleccion.lower() == 'sal':
+    elif seleccion == '4' or seleccion.lower() == 'actualizar' or seleccion.lower() == 'act':
 
-        print("\t\tSISTEMA FINALIZADO")
+        actualizar()
+
+    elif seleccion == '5' or seleccion.lower() == 'salir' or seleccion.lower() == 'sal':
+
+        print("\t\tSALIENDO DEL SISTEMA")
         
-        input()
+        time.sleep(2)
         system("cls")
         
         return
 
     else:
 
-        input("\t\tSELECCIONE UNA OPCION DEL MENU\n")
+        print("\t\tSELECCIONE UNA OPCION DEL MENU\n")
+        time.sleep(2)
 
-    inicio()
+    menu()
+
+
+def actualizar():
+
+    system("cls")
+
+    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tActualizando datos...")
+    
+    datos.obtenerDatosGenerales(fechaMostrar)
+
+    system("cls")
+
+    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tDatos actualizados")
+    time.sleep(2)
+
+
+def inicio():
+
+    actualizar()
+    menu()
 
 
 inicio()
-
-
-
-

@@ -1,7 +1,7 @@
 import Clases as clase
 from bs4 import BeautifulSoup
 from requests import Response
-from datetime import datetime, timedelta
+from datetime import datetime
 import requests
 import pandas as pd
 import os
@@ -52,9 +52,9 @@ def _verificarResponse(response: Response):
 
 
 def _guardarDatosDefinido(response: Response, rutaArchivo: str, numeroTabla: int, numeroColuma: int,
-                          nombreColumnas: tuple):
+                          fechaGuardado: str, nombreColumnas: tuple):
     
-    ruta = 'Datos//' + rutaArchivo + '.csv'
+    ruta = 'Datos//' + rutaArchivo + fechaGuardado + '.csv'
     soup = BeautifulSoup(response.text, 'html.parser')
     
     tabla = soup.find_all('table')[numeroTabla]
@@ -82,19 +82,22 @@ def _guardarDatosDefinido(response: Response, rutaArchivo: str, numeroTabla: int
             dato = dato.replace('  ', '')
 
             datoColumn[nombreColumnas[indice]] = dato
-            indice += 1 
+            indice += 1
         
         datosRow.append(datoColumn)
 
+        guardarIndividual(datoColumn, nombreColumnas[0], fechaGuardado, rutaArchivo)
+        
     dfNuevo = pd.DataFrame(datosRow, columns=nombreColumnas)
     dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
 
     return dfNuevo
 
 
-def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: int, nombreColumnas: tuple):
+def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: int, fechaGuardado: str,
+                            nombreColumnas: tuple):
 
-    ruta = 'Datos//' + rutaArchivo + '.csv'
+    ruta = 'Datos//' + rutaArchivo + fechaGuardado + '.csv'
     soup = BeautifulSoup(response.text, 'html.parser')
 
     tabla = soup.find_all('table')[numeroTabla]
@@ -117,9 +120,11 @@ def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: i
             dato = dato.replace('  ', '')
 
             datoColumn[nombreColumnas[indice]] = dato
-            indice += 1 
+            indice += 1
 
         datosRow.append(datoColumn)
+        
+        guardarIndividual(datoColumn, nombreColumnas[0], fechaGuardado, rutaArchivo)
 
     dfNuevo = pd.DataFrame(datosRow, columns=nombreColumnas)
     dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
@@ -127,72 +132,72 @@ def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: i
     return dfNuevo
 
 
-def _responseEstadisticaAvzJugadores(ruta: str):
+def _responseEstadisticaAvzJugadores(ruta: str, fechaGuardado: datetime):
 
     url = 'https://www.rincondelmanager.com/smgr/avanzadas.php'
     response = requests.get(url)
 
     if(_verificarResponse(response)):
 
-        dfGuardado = _guardarDatosDefinido(response, ruta, 3, 0, ())
+        dfGuardado = _guardarDatosDefinido(response, ruta, 3, 0, fechaGuardado, ())
         return dfGuardado
 
     return False
 
 
-def _responseTirosJugadores(ruta: str):
+def _responseTirosJugadores(ruta: str, fechaGuardado: datetime):
 
     url = 'https://www.rincondelmanager.com/smgr/porcentajes_tiro.php'
     response = requests.get(url)
     
     if(_verificarResponse(response)):
 
-        dfGuardado = _guardarDatosDefinido(response, ruta, 3, 1, ('Jug', 'Jugador', 'Eq'))
+        dfGuardado = _guardarDatosDefinido(response, ruta, 3, 1, fechaGuardado, ('Jug', 'Jugador', 'Eq'))
         return dfGuardado
 
     return False
 
 
-def _responseEstadisticaAvzEquipos(ruta: str):
+def _responseEstadisticaAvzEquipos(ruta: str, fechaGuardado: datetime):
 
     url = 'https://www.rincondelmanager.com/smgr/avanzadas_equipo.php'
     response = requests.get(url)
     
     if(_verificarResponse(response)):
 
-        dfGuardado = _guardarDatosDefinido(response, ruta, 0, 0, ())
+        dfGuardado = _guardarDatosDefinido(response, ruta, 0, 0, fechaGuardado, ())
         return dfGuardado
 
     return False
 
 
-def _responseTirosEquipos(ruta: str):
+def _responseTirosEquipos(ruta: str, fechaGuardado: datetime):
 
     url = 'https://www.rincondelmanager.com/smgr/porcentajes_tiro_equipo.php'
     response = requests.get(url)
     
     if(_verificarResponse(response)):
 
-        dfGuardado = _guardarDatosDefinido(response, ruta, 0, 1, ("Eq",))
+        dfGuardado = _guardarDatosDefinido(response, ruta, 0, 1, fechaGuardado, ("Eq",))
         return dfGuardado
 
     return False
 
 
-def _responseClasificacion(ruta: str):
+def _responseClasificacion(ruta: str, fechaGuardado: datetime):
 
     url = 'https://www.sport.es/resultados/baloncesto/acb/clasificacion-liga.html'
     response = requests.get(url)
     
     if(_verificarResponse(response)):
 
-        dfGuardado = _guardarDatosIndefinido(response, ruta, 2, ('Equipo', 'PJ', 'PG', 'PP', 'PF', 'PC', 'DIF'))
+        dfGuardado = _guardarDatosIndefinido(response, ruta, 2, fechaGuardado, ('Equipo', 'PJ', 'PG', 'PP', 'PF', 'PC', 'DIF'))
         return dfGuardado
 
     return False
 
 
-def _responseLesionados(ruta: str):
+def _responseLesionados(ruta: str, fechaGuardado: datetime):
 
     url = ''
     response = requests.get(url)
@@ -241,24 +246,71 @@ def setDatosClases(clase: clase, rutaArchivo: str):
     return listaClase
 
 
-def obtenerDatosGenerales(fechaGuardado: datetime):
+def obtenerDatosGenerales(fechaGuardado: str):
+    
+    ruta = 'Jugadores//Fecha//EstadisticaAvanzadaJugadores_'
+    _responseEstadisticaAvzJugadores(ruta, fechaGuardado)
 
-    fechaGuardado = fechaGuardado.strftime("%d-%m-%Y")
+    ruta = 'Jugadores//Fecha//TirosJugadores_'
+    _responseTirosJugadores(ruta, fechaGuardado)
 
-    ruta = 'Jugadores//Fecha//EstadisticaAvanzadaJugadores_' + fechaGuardado
-    _responseEstadisticaAvzJugadores(ruta)
+    ruta = 'Equipos//Fecha//EstadisticaAvanzadaEquipos_'
+    _responseEstadisticaAvzEquipos(ruta, fechaGuardado)
 
-    ruta = 'Jugadores//Fecha//TirosJugadores_'+ fechaGuardado
-    _responseTirosJugadores(ruta)
+    ruta = 'Equipos//Fecha//TirosEquipos_'
+    _responseTirosEquipos(ruta, fechaGuardado)
 
-    ruta = 'Equipos//Fecha//EstadisticaAvanzadaEquipos_'+ fechaGuardado
-    _responseEstadisticaAvzEquipos(ruta)
-
-    ruta = 'Equipos//Fecha//TirosEquipos_'+ fechaGuardado
-    _responseTirosEquipos(ruta)
-
-    ruta = 'Equipos//Fecha//Clasificacion_'+ fechaGuardado
-    _responseClasificacion(ruta)
-
+    ruta = 'Equipos//Fecha//Clasificacion_'
+    _responseClasificacion(ruta, fechaGuardado)
+    
     #_responseLesionados()
+
+
+def guardarIndividual(datos: dict, indice: str, fecha: str, rutaArchivo: str):
+    
+    columnaBusqueda = datos[indice]
+
+    rutaJugador = 'Datos//' + rutaArchivo.replace('Fecha', 'Jugador') + columnaBusqueda + '.csv'
+    rutaEquipo = 'Datos//' + rutaArchivo.replace('Fecha', 'Equipo') + columnaBusqueda + '.csv'
+
+    dfGeneral: pd.DataFrame
+
+    if os.path.exists(rutaEquipo):
+
+        dfGeneral = pd.read_csv(rutaEquipo)
+        rutaGuardado = rutaEquipo
+    
+    elif os.path.exists(rutaJugador):
+
+        dfGeneral = pd.read_csv(rutaJugador)
+        rutaGuardado = rutaJugador
+
+    else:
+
+        datos[indice] = fecha
+        registro = pd.DataFrame([datos])
+        datos[indice] = columnaBusqueda
+
+        if rutaArchivo.find('Jugadores') == 0:
+
+            rutaGuardado = rutaJugador
+
+        elif rutaArchivo.find('Equipos') == 0:
+
+            rutaGuardado = rutaEquipo
+
+        else:
+
+            return
+        
+        registro.to_csv(rutaGuardado, index=False)
+        return
+    
+    datos[indice] = fecha
+    registro = pd.DataFrame([datos])
+    datos[indice] = columnaBusqueda
+    
+    registro = pd.concat([dfGeneral, registro], ignore_index=True)
+    registro.to_csv(rutaGuardado, index=False)
+
 

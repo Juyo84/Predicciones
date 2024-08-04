@@ -3,20 +3,31 @@ from datetime import datetime
 from os import system
 import time
 
-fecha: datetime = datetime.now()
-fechaMostrar = fecha.strftime('%d-%m-%Y')
-
-def menu():
+def _menu(estadoActualizacion: bool):
 
     system("cls")
+    
+    fecha: datetime = datetime.now()
+    fechaMostrar = fecha.strftime('%d-%m-%Y')
+    
+    if estadoActualizacion:
 
-    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
-    print("1. Realizar prediccion")
-    print("2. Predicciones automaticas")
-    print("3. Lista de predicciones")
-    print("4. Actualizar datos")
-    print("5. Salir")
+        print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
+        print("1. Realizar prediccion")
+        print("2. Predicciones automaticas")
+        print("3. Lista de predicciones")
+        print("4. Actualizar datos")
+        print("5. Salir")
 
+    else:
+
+        print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\tDATOS NO ACTUALIZADOS" + "\n")
+        print("1. Realizar prediccion")
+        print("2. Predicciones automaticas")
+        print("3. Lista de predicciones")
+        print("4. Actualizar datos")
+        print("5. Salir")
+        
     seleccion = input()
     system("cls")
         
@@ -30,11 +41,11 @@ def menu():
 
     elif seleccion == '3' or seleccion.lower() == 'lista' or seleccion.lower() == 'lis':
 
-        input()
+        listaPredicciones()
 
     elif seleccion == '4' or seleccion.lower() == 'actualizar' or seleccion.lower() == 'act':
 
-        actualizar()
+        estadoActualizacion = _actualizar()
 
     elif seleccion == '5' or seleccion.lower() == 'salir' or seleccion.lower() == 'sal':
 
@@ -50,29 +61,73 @@ def menu():
         print("\t\tSELECCIONE UNA OPCION DEL MENU\n")
         time.sleep(2)
 
-    menu()
+    _menu(estadoActualizacion)
 
 
-def actualizar():
+def _actualizar() -> bool:
 
     system("cls")
-
-    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
-    print("\t\tActualizando datos...")
     
-    datos.obtenerDatosGenerales(fechaMostrar)
+    fecha: datetime = datetime.now()
+    fechaMostrar = fecha.strftime('%d-%m-%Y')
+    
+    print("ACTUALIZACION DE DATOS\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tActualizando datos...")
+
+    try:
+    
+        datos.obtenerDatosGenerales(fechaMostrar)
+
+    except Exception:
+        
+        system("cls")
+        
+        print("ACTUALIZACION DE DATOS\t\tFecha: " + fechaMostrar + "\n")
+        print("\t\tError al actualizar...")
+        time.sleep(3)
+        
+        return False        
 
     system("cls")
 
-    print("BIENVENIDO AL PROGRAMA\t\tFecha: " + fechaMostrar + "\n")
+    print("ACTUALIZACION DE DATOS\t\tFecha: " + fechaMostrar + "\n")
     print("\t\tDatos actualizados")
     time.sleep(2)
+
+    return True
+
+
+def listaPredicciones() -> bool:
+
+    system("cls")
+
+    fecha: datetime = datetime.now()
+    fechaMostrar = fecha.strftime('%d-%m-%Y')
+    
+    print("LISTA DE PREDICCIONES\t\tFecha: " + fechaMostrar + "\n")
+    
+    resultados: list = datos.getPartidosResultados()
+
+    if resultados.__len__() > 0:
+
+        for resultado in resultados:
+
+            print(resultado)
+
+    else:
+
+        print("\t\tSin Registros\n")
+    
+    input("\nPresione cualquier boton para continuar...")
+
+    return True
 
 
 def inicio():
 
-    actualizar()
-    menu()
+    estadoActualizacion: bool = _actualizar()
+    
+    _menu(estadoActualizacion)
 
 
 inicio()

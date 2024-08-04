@@ -1,3 +1,6 @@
+import pandas as pd
+from typing import Type
+
 class Clasificacion:
 
     _equipo: str
@@ -375,7 +378,7 @@ class AvanzadaJugador:
     def getEficienciaTiroRival(self):
         return self._eficienciaTiroRival
     
-
+    
 class TirosJugador:
 
     _jug: str
@@ -648,6 +651,23 @@ class InfluenciaBaja:
 
     def getValoracionDiferencial(self):    
         return self._valoracionDiferencial
+
+
+def setDatosClases(clase: Type, rutaArchivo: str) -> list:
+    
+    dfClase = pd.read_csv("Datos//" + rutaArchivo + ".csv")
+    listaClase: list = []
+    
+    for _, row in dfClase.iterrows():
+        
+        datosRow = tuple(row)
+        claseAgregar = clase()
+
+        claseAgregar.setDatos(datosRow)
+        listaClase.append(claseAgregar)
+
+    return listaClase
+
 
 
 

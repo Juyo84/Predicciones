@@ -252,12 +252,12 @@ def obtenerDatosGenerales(fechaGuardado: str) -> bool:
 
     if fecha >= fechaInicio:
     
-        temporada = fecha.year + 1
+        temporada = fecha.year
 
     else:
 
-        temporada = fecha.year
-    
+        temporada = fecha.year - 1
+
     ruta = 'Jugadores//General//EstadisticaAvanzadaJugadores_'
     _responseEstadisticaAvzJugadores(ruta, fechaGuardado)
 
@@ -271,7 +271,7 @@ def obtenerDatosGenerales(fechaGuardado: str) -> bool:
     _responseClasificacion(ruta, fechaGuardado)
     
     ruta = 'Equipos//General//EstadisticaACB_'
-    _responseEstadisticaACB(ruta, temporada, fechaGuardado)
+    _responseEstadisticaACB(ruta, 2023, fechaGuardado)
     
     ruta = ''
     #_responseLesionados()

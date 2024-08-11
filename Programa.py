@@ -41,7 +41,7 @@ def _menu(estadoActualizacion: bool):
 
     elif seleccion == '3' or seleccion.lower() == 'lista' or seleccion.lower() == 'lis':
 
-        listaPredicciones()
+        _listaPredicciones()
 
     elif seleccion == '4' or seleccion.lower() == 'actualizar' or seleccion.lower() == 'act':
 
@@ -73,7 +73,7 @@ def _actualizar() -> bool:
     
     print("ACTUALIZACION DE DATOS\t\tFecha: " + fechaMostrar + "\n")
     print("\t\tActualizando datos...")
-
+    
     try:
     
         datos.obtenerDatosGenerales(fechaMostrar)
@@ -97,7 +97,7 @@ def _actualizar() -> bool:
     return True
 
 
-def listaPredicciones() -> bool:
+def _listaPredicciones():
 
     system("cls")
 
@@ -119,8 +119,6 @@ def listaPredicciones() -> bool:
         print("\t\tSin Registros\n")
     
     input("\nPresione cualquier boton para continuar...")
-
-    return True
 
 
 def inicio():

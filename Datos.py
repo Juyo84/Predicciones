@@ -9,18 +9,18 @@ listaEquipos = [
         ("Unicaja", "UNI"),
         ("Real Madrid", "RMA"),
         ("FC Barcelona", "FCB"),
-        ("Valencia Basket", "VAL"),
+        ("Valencia Basket", "VBC"),
         ("UCAM Murcia", "MUR"),
-        ("Lenovo Tenerife", "TFE"),
-        ("Gran Canaria", "GCA"),
+        ("Lenovo Tenerife", "CAN"),
+        ("Gran Canarias", "GCA"),
         ("Baxi Manresa", "MAN"),
         ("Baskonia", "BAS"),
         ("Joventut", "JOV"),
         ("MoraBanc Andorra", "AND"),
         ("Casademont Zaragoza", "ZAR"),
-        ("Bilbao Basket", "BIL"),
+        ("Bilbao Basket", "BLB"),
         ("Bàsquet Girona", "GIR"),
-        ("Covirán CB Granada", "GRA"),
+        ("Covirán CB Granada", "COV"),
         ("Breogán", "BRE"),
         ("Monbus Obradoiro", "OBR"),
         ("Zunder Palencia", "PAL")
@@ -54,7 +54,7 @@ def _verificarResponse(response: Response) -> bool:
 def _guardarDatosDefinido(response: Response, rutaArchivo: str, numeroTabla: int, numeroColuma: int,
                           fechaGuardado: str, indice: int, nombreColumnas: tuple) -> pd.DataFrame:
     
-    ruta = 'Datos//' + rutaArchivo + fechaGuardado + '.csv'
+    ruta = 'Datos//' + rutaArchivo + '.csv'
     soup = BeautifulSoup(response.text, 'html.parser')
     
     tabla = soup.find_all('table')[numeroTabla]
@@ -97,7 +97,7 @@ def _guardarDatosDefinido(response: Response, rutaArchivo: str, numeroTabla: int
 def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: int, fechaGuardado: str, indice: int,
                             nombreColumnas: tuple) -> pd.DataFrame:
 
-    ruta = 'Datos//' + rutaArchivo + fechaGuardado + '.csv'
+    ruta = 'Datos//' + rutaArchivo + '.csv'
     soup = BeautifulSoup(response.text, 'html.parser')
 
     tabla = soup.find_all('table')[numeroTabla]

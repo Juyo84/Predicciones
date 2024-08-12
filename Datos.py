@@ -33,7 +33,7 @@ def equipos(equipoCambiar: str, busqueda: int) -> str:
         
         for nombreEquipo in equipo:
         
-            if nombreEquipo == equipoCambiar:
+            if nombreEquipo.lower() == equipoCambiar.lower():
 
                 return equipo[busqueda]
 

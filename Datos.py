@@ -6,38 +6,36 @@ import pandas as pd
 import os
 
 listaEquipos = [
-        ("Unicaja", "UNI"),
-        ("Real Madrid", "RMA"),
-        ("FC Barcelona", "FCB"),
-        ("Valencia Basket", "VBC"),
-        ("UCAM Murcia", "MUR"),
-        ("Lenovo Tenerife", "CAN"),
-        ("Gran Canarias", "GCA"),
-        ("Baxi Manresa", "MAN"),
-        ("Baskonia", "BAS"),
-        ("Joventut", "JOV"),
-        ("MoraBanc Andorra", "AND"),
-        ("Casademont Zaragoza", "ZAR"),
-        ("Bilbao Basket", "BLB"),
-        ("Bàsquet Girona", "GIR"),
-        ("Covirán CB Granada", "COV"),
-        ("Breogán", "BRE"),
-        ("Monbus Obradoiro", "OBR"),
-        ("Zunder Palencia", "PAL")
-    ]
+    ('Baskonia',                'BAS', 'Baskonia'),
+    ('BAXI Manresa',            'MAN', 'Baxi Manresa'),
+    ('Barca',                   'FCB', 'FC Barcelona'),
+    ('Bàsquet Girona',          'GIR', 'Bàsquet Girona'),
+    ('Casademont Zaragoza',     'ZAR', 'Casademont Zaragoza'),
+    ('Coviran Granada',         'COV', 'Covirán CB Granada'),
+    ('Dreamland Gran Canaria',  'GCA', 'Gran Canaria'),
+    ('Joventut Badalona',       'JOV', 'Joventut'),
+    ('La Laguna Tenerife',      'CAN', 'Lenovo Tenerife'),
+    ('MoraBanc Andorra',        'AND', 'MoraBanc Andorra'),
+    ('Monbus Obradoiro',        'OBR', 'Monbus Obradoiro'),
+    ('Real Madrid',             'RMA', 'Real Madrid'),
+    ('Río Breogán',             'BRE', 'Breogán'),
+    ('Surne Bilbao Basket',     'BLB', 'Bilbao Basket'),
+    ('UCAM Murcia',             'MUR', 'UCAM Murcia'),
+    ('Unicaja',                 'UNI', 'Unicaja'),
+    ('Valencia Basket',         'VBC', 'Valencia Basket'),
+    ('Zunder Palencia',         'PAL', 'Zunder Palencia')
+]
 
 
-def equipos(nombre: str, abreviadas: str) -> str:
+def equipos(equipoCambiar: str, busqueda: int) -> str:
 
     for equipo in listaEquipos:
         
-        if equipo[0] == nombre:
+        for nombreEquipo in equipo:
+        
+            if nombreEquipo == equipoCambiar:
 
-            return equipo[1] 
-
-        if equipo[1] == abreviadas:
-
-            return equipo[0]
+                return equipo[busqueda]
 
     return ""
 
@@ -86,7 +84,7 @@ def _guardarDatosDefinido(response: Response, rutaArchivo: str, numeroTabla: int
         
         datosRow.append(datoColumn)
 
-        guardarIndividual(datoColumn, nombreColumnas[indice], fechaGuardado, rutaArchivo)
+        _guardarIndividual(datoColumn, nombreColumnas[indice], fechaGuardado, rutaArchivo)
         
     dfNuevo = pd.DataFrame(datosRow, columns=nombreColumnas)
     dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
@@ -124,7 +122,7 @@ def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: i
 
         datosRow.append(datoColumn)
         
-        guardarIndividual(datoColumn, nombreColumnas[indice], fechaGuardado, rutaArchivo)
+        _guardarIndividual(datoColumn, nombreColumnas[indice], fechaGuardado, rutaArchivo)
 
     dfNuevo = pd.DataFrame(datosRow, columns=nombreColumnas)
     dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
@@ -243,55 +241,14 @@ def responseInfluenciaBajaJugador(nombreJugador: str, fecha: str) -> pd.DataFram
     return pd.DataFrame
 
 
-def obtenerDatosGenerales(fechaGuardado: str) -> bool:
-    
-    temporada: int
-
-    fecha: datetime = datetime.strptime(fechaGuardado, "%d-%m-%Y")
-    fechaInicio: datetime = datetime(fecha.year, 9, 1)
-
-    if fecha >= fechaInicio:
-    
-        temporada = fecha.year
-
-    else:
-
-        temporada = fecha.year - 1
-
-    ruta = 'Jugadores//General//EstadisticaAvanzadaJugadores_'
-    _responseEstadisticaAvzJugadores(ruta, fechaGuardado)
-
-    ruta = 'Jugadores//General//TirosJugadores_'
-    _responseTirosJugadores(ruta, fechaGuardado)
-
-    ruta = 'Equipos//General//EstadisticaAvanzadaEquipos_'
-    _responseEstadisticaAvzEquipos(ruta, fechaGuardado)
-
-    ruta = 'Equipos//General//Clasificacion_'
-    _responseClasificacion(ruta, fechaGuardado)
-    
-    ruta = 'Equipos//General//EstadisticaACB_'
-    _responseEstadisticaACB(ruta, 2023, fechaGuardado)
-    
-    ruta = ''
-    #_responseLesionados()
-
-    ''' DATOS REPETIDOS/INECESARIOS
-    
-        ruta = 'Equipos//General//TirosEquipos_'
-        _responseTirosEquipos(ruta, fechaGuardado)
-
-    '''
-    
-    return True
-
-
-def guardarIndividual(datos: dict, indice: str, fecha: str, rutaArchivo: str) -> bool:
+def _guardarIndividual(datos: dict, indice: str, fecha: str, rutaArchivo: str) -> bool:
     
     columnaBusqueda = datos[indice]
-    
-    rutaEquipo = 'Datos//' + rutaArchivo.replace('General', 'Equipo') + columnaBusqueda + '.csv'
+
     rutaJugador = 'Datos//' + rutaArchivo.replace('General', 'Jugador') + columnaBusqueda + '.csv'
+
+    columnaBusqueda = equipos(columnaBusqueda, 1)
+    rutaEquipo = 'Datos//' + rutaArchivo.replace('General', 'Equipo') + columnaBusqueda + '.csv'
     
     dfGeneral: pd.DataFrame
 
@@ -440,6 +397,49 @@ def guardarGanador(fecha: datetime, casa: str, visitante: str, ganadorFinal: str
     dfActualizado = pd.DataFrame(dfExistente)
     dfActualizado.to_csv(rutaBusqueda, index=False)
 
+    return True
+
+
+def obtenerDatosGenerales(fechaGuardado: str) -> bool:
+    
+    temporada: int
+
+    fecha: datetime = datetime.strptime(fechaGuardado, "%d-%m-%Y")
+    fechaInicio: datetime = datetime(fecha.year, 9, 1)
+
+    if fecha >= fechaInicio:
+    
+        temporada = fecha.year
+
+    else:
+
+        temporada = fecha.year - 1
+
+    ruta = 'Jugadores//General//EstadisticaAvanzadaJugadores_'
+    _responseEstadisticaAvzJugadores(ruta, fechaGuardado)
+
+    ruta = 'Jugadores//General//TirosJugadores_'
+    _responseTirosJugadores(ruta, fechaGuardado)
+
+    ruta = 'Equipos//General//EstadisticaAvanzadaEquipos_'
+    _responseEstadisticaAvzEquipos(ruta, fechaGuardado)
+
+    ruta = 'Equipos//General//Clasificacion_'
+    _responseClasificacion(ruta, fechaGuardado)
+    
+    ruta = 'Equipos//General//EstadisticaACB_'
+    _responseEstadisticaACB(ruta, 2023, fechaGuardado)
+    
+    ruta = ''
+    #_responseLesionados()
+
+    ''' DATOS REPETIDOS/INECESARIOS
+    
+        ruta = 'Equipos//General//TirosEquipos_'
+        _responseTirosEquipos(ruta, fechaGuardado)
+
+    '''
+    
     return True
 
 

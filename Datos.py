@@ -130,6 +130,88 @@ def _guardarDatosIndefinido(response: Response, rutaArchivo: str, numeroTabla: i
     return dfNuevo
 
 
+def _guardarCalendario(response: Response, rutaArchivo: str) -> pd.DataFrame:
+
+    ruta = 'Datos//' + rutaArchivo + '.csv'
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    '''
+    meses = ("Sep", "Oct", "Nov",
+             "Dic", "Ene", "Feb",
+             "Mar", "Abr", "May",
+             "Jun", "Ago")
+    
+    fechasInicio: str =  soup.find('div', class_='float-right fechas mayusculas').text
+
+    mesInicial: int = 0
+
+    for mes in meses:
+
+        if (mes in fechasInicio):
+
+            mesInicial = meses.index(mes)
+            break
+    '''
+    
+    partidos = soup.find_all('article', class_='partido previa')
+
+    datosRow = []
+
+    '''
+    fechaAnterior: int = 0
+    fecha: str = '00'
+    '''
+
+    for partido in partidos:
+
+        equipoCasa: str = partido.find_all('div')[0].find('span', class_='nombre_corto').text
+        equipoVisitante: str = partido.find_all('div')[5].find('span', class_='nombre_corto').text
+
+        fecha = partido.find_all('div')[2].find_all('span')[0].text
+        fecha = fecha.replace(' - ', '')
+        
+        '''
+            fechaActual = int(fecha[-2] + fecha[-1])
+            
+            if fechaAnterior > fechaActual:
+
+                mesInicial += 1
+
+                if mesInicial > len(meses):
+
+                    mesInicial = 0
+
+            fecha = meses[mesInicial] + " " + fecha
+        '''
+        
+        hora: str = partido.find_all('div')[2].find_all('span')[2].text
+
+        datoColumn = {'Fecha': fecha, 'Hora': hora, 'Casa': equipoCasa, 'Visitante': equipoVisitante}
+        datosRow.append(datoColumn)
+
+        '''
+        fechaAnterior = fechaActual
+        '''
+
+    dfNuevo = pd.DataFrame(datosRow, columns=["Fecha", "Hora", "Casa", "Visitante"])
+    dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
+
+    return dfNuevo
+    
+
+def _responseCalendario(ruta: str) -> pd.DataFrame:
+
+    url = 'https://www.acb.com/calendario/'
+    response = requests.get(url)
+
+    if(_verificarResponse(response)):
+
+        dfGuardado = _guardarCalendario(response, ruta)
+        return dfGuardado
+
+    return pd.DataFrame
+
+
 def _responseEstadisticaAvzJugadores(ruta: str, fechaGuardado: datetime) -> pd.DataFrame:
 
     url = 'https://www.rincondelmanager.com/smgr/avanzadas.php'
@@ -430,6 +512,9 @@ def obtenerDatosGenerales(fechaGuardado: str) -> bool:
     ruta = 'Equipos//General//EstadisticaACB_'
     _responseEstadisticaACB(ruta, 2023, fechaGuardado)
     
+    ruta = 'Equipos//General//Calendario_'
+    _responseCalendario(ruta)
+
     ruta = ''
     #_responseLesionados()
 
@@ -472,3 +557,4 @@ def getPartidosResultados() -> list:
     return partidos
 
 
+_responseCalendario('Equipos//General//Calendario_')

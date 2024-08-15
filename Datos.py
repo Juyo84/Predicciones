@@ -8,13 +8,15 @@ import os
 listaEquipos = [
     ('Baskonia',                'BAS', 'Baskonia'),
     ('BAXI Manresa',            'MAN', 'Baxi Manresa'),
-    ('Barca',                   'FCB', 'FC Barcelona'),
+    ('Barça',                   'FCB', 'FC Barcelona'),
     ('Bàsquet Girona',          'GIR', 'Bàsquet Girona'),
     ('Casademont Zaragoza',     'ZAR', 'Casademont Zaragoza'),
     ('Coviran Granada',         'COV', 'Covirán CB Granada'),
     ('Dreamland Gran Canaria',  'GCA', 'Gran Canaria'),
+    ('Hiopos Lleida',           'LLE', 'Hiopos Lleida'),
     ('Joventut Badalona',       'JOV', 'Joventut'),
     ('La Laguna Tenerife',      'CAN', 'Lenovo Tenerife'),
+    ('Leyma Coruña',            'COR', 'Leyma Coruña'),
     ('MoraBanc Andorra',        'AND', 'MoraBanc Andorra'),
     ('Monbus Obradoiro',        'OBR', 'Monbus Obradoiro'),
     ('Real Madrid',             'RMA', 'Real Madrid'),
@@ -37,7 +39,7 @@ def equipos(equipoCambiar: str, busqueda: int) -> str:
 
                 return equipo[busqueda]
 
-    return ""
+    return "Otro"
 
 
 def _verificarResponse(response: Response) -> bool:
@@ -135,7 +137,6 @@ def _guardarCalendario(response: Response, rutaArchivo: str) -> pd.DataFrame:
     ruta = 'Datos//' + rutaArchivo + '.csv'
     soup = BeautifulSoup(response.text, 'html.parser')
     
-    '''
     meses = ("Sep", "Oct", "Nov",
              "Dic", "Ene", "Feb",
              "Mar", "Abr", "May",
@@ -151,53 +152,47 @@ def _guardarCalendario(response: Response, rutaArchivo: str) -> pd.DataFrame:
 
             mesInicial = meses.index(mes)
             break
-    '''
     
     partidos = soup.find_all('article', class_='partido previa')
 
     datosRow = []
 
-    '''
     fechaAnterior: int = 0
     fecha: str = '00'
-    '''
 
     for partido in partidos:
 
-        equipoCasa: str = partido.find_all('div')[0].find('span', class_='nombre_corto').text
-        equipoVisitante: str = partido.find_all('div')[5].find('span', class_='nombre_corto').text
+        equipoCasa: str = partido.find_all('div')[0].find('span', class_='nombre_largo').text
+        equipoVisitante: str = partido.find_all('div')[5].find('span', class_='nombre_largo').text
 
         fecha = partido.find_all('div')[2].find_all('span')[0].text
         fecha = fecha.replace(' - ', '')
+        fecha = fecha[3:len(fecha)+1].replace('  ', '')
         
-        '''
-            fechaActual = int(fecha[-2] + fecha[-1])
-            
-            if fechaAnterior > fechaActual:
+        fechaActual = int(fecha[-2] + fecha[-1])
+        
+        if fechaAnterior > fechaActual:
 
-                mesInicial += 1
+            mesInicial += 1
 
-                if mesInicial > len(meses):
+            if mesInicial > len(meses):
 
-                    mesInicial = 0
+                mesInicial = 0
 
-            fecha = meses[mesInicial] + " " + fecha
-        '''
+        fecha = meses[mesInicial] + fecha
         
         hora: str = partido.find_all('div')[2].find_all('span')[2].text
 
         datoColumn = {'Fecha': fecha, 'Hora': hora, 'Casa': equipoCasa, 'Visitante': equipoVisitante}
         datosRow.append(datoColumn)
 
-        '''
         fechaAnterior = fechaActual
-        '''
 
     dfNuevo = pd.DataFrame(datosRow, columns=["Fecha", "Hora", "Casa", "Visitante"])
     dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
 
     return dfNuevo
-    
+
 
 def _responseCalendario(ruta: str) -> pd.DataFrame:
 
@@ -557,4 +552,43 @@ def getPartidosResultados() -> list:
     return partidos
 
 
-_responseCalendario('Equipos//General//Calendario_')
+def getCalendario(ruta: str) -> list:
+
+    rutaBusqueda: str = "Datos//" + ruta + ".csv"
+    dfBusqueda: pd.DataFrame
+    partidos: list = []
+
+    indice = 0
+
+    if not os.path.exists(rutaBusqueda):
+
+        return partidos
+
+    dfBusqueda = pd.read_csv(rutaBusqueda)
+
+    partidos = dfBusqueda.values.tolist()
+
+    for partido in partidos:
+
+        fecha = partido[0]
+        hora = partido[1]
+        equipoCasa = equipos(partido[2], 0)
+        equipoVisitante = equipos(partido[3], 0)
+
+        if len(equipoCasa) < 8:
+
+            datoString = fecha + "\t" + hora + "\t" + equipoCasa + "\t\t\t" + equipoVisitante
+
+        elif len(equipoCasa) < 16:
+
+            datoString = fecha + "\t" + hora + "\t" + equipoCasa + "\t\t" + equipoVisitante
+
+        else:
+
+            datoString = fecha + "\t" + hora + "\t" + equipoCasa + "\t" + equipoVisitante
+
+        partidos[indice] = datoString
+        indice += 1
+
+    return partidos
+

@@ -161,7 +161,7 @@ def _prediccion():
     print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
     print("\t\tHaciendo calculos...")
 
-    resultado = prediccion.prediccion(casa, visitante)
+    resultado = prediccion.prediccion(fechaMostrar, casa, visitante)
 
     system("cls")
 
@@ -200,9 +200,28 @@ def _listaPredicciones():
 
 def inicio():
 
-    estadoActualizacion: bool = _actualizar()
-    
-    _menu(estadoActualizacion)
+    system("cls")
 
+    print("¿DESEA ACTUALIZAR LOS DATOS?")
+    print("1. Si")
+    print("2. No\n")
+
+    res = input()
+
+    if res.lower() == '1' or res.lower() == 'si':
+
+        estadoActualizacion: bool = _actualizar()
+        _menu(estadoActualizacion)
+
+    elif res.lower() == '2' or res.lower() == 'no':
+
+        _menu(False)
+
+    else:
+        
+        print("\t\tSELECCIONE UNA OPCION\n")
+        time.sleep(2)
+        
+        inicio()
 
 inicio()

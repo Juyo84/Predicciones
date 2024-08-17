@@ -1,8 +1,11 @@
 import Ponderaciones as ponderacion
+import Datos as datos
+from datetime import datetime
 
-def prediccion(equipoCasa: str, equipoVisitante: str) -> tuple:
+def prediccion(fecha: datetime, equipoCasa: str, equipoVisitante: str) -> tuple:
 
     diferencia: float
+    ganador: tuple
 
     casa = 0
     visitante = 0
@@ -20,14 +23,20 @@ def prediccion(equipoCasa: str, equipoVisitante: str) -> tuple:
 
         diferencia = casa - visitante
 
-        return (equipoCasa, diferencia)
+        ganador = (equipoCasa, diferencia)
 
     elif visitante > casa:
 
         diferencia = visitante - casa
 
-        return (equipoVisitante, diferencia)
+        ganador = (equipoVisitante, diferencia)
+
+    else:
+
+        ganador = ("EMPATE", 0)
+
+    datos.guardarPartido(fecha, equipoCasa, casa, 0, equipoVisitante, visitante, 0, ganador[0])
     
-    return ("EMPATE", 0)
+    return ganador
 
 

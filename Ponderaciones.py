@@ -33,8 +33,7 @@ def _ponderacionUltimoRegistro(ruta: str, ponderaciones: tuple) -> float:
     if os.path.exists(ruta):
         
         dfEstadisticas: pd.DataFrame = pd.read_csv(ruta)
-
-        total: float = 0
+        
         columnas = dfEstadisticas.columns
 
         for columna in range(0, columnas.size, 1):
@@ -45,6 +44,30 @@ def _ponderacionUltimoRegistro(ruta: str, ponderaciones: tuple) -> float:
                 
                 total += (float(dato) * float(ponderaciones[columna]))
     
+    return total
+
+
+def _ponderacionUltimoRegistroJugador(equipo: str, nombreIndice: str, ponderaciones: tuple, ruta: str) -> float:
+
+    total: float = 0
+
+    if os.path.exists(ruta):
+        
+        dfEstadisticas: pd.DataFrame = pd.read_csv(ruta)
+        dfFiltro: pd.DataFrame = dfEstadisticas[dfEstadisticas[nombreIndice] == equipo]
+
+        for jugador in range(0, len(dfFiltro), 1):
+
+            columnas = dfFiltro.columns
+
+            for columna in range(0, len(columnas), 1):
+                
+                dato: str = str(dfFiltro.values[jugador][columna])
+
+                if dato.isnumeric():
+                    
+                    total += (float(dato) * float(ponderaciones[columna]))
+
     return total
 
 
@@ -66,4 +89,19 @@ def totalPonderacionEquipo(equipo: str) -> float:
 
     return ponderacion
 
+
+def totalPonderacionJugadores(equipo: str) -> float:
+
+    equipo = datos.equipos(equipo, 1)
+    
+    ponderacion: float = 0
+    ruta: str = ''
+
+    ruta = 'Datos//Jugadores//Jugador//EstadisticaAvanzadaJugadores_.csv'
+    ponderacion += _ponderacionUltimoRegistro(ruta, v1ponderacionesEstadisticaAvanzadaJugadores)
+    
+    ruta = 'Datos//Jugadores//Jugador//TirosJugadores_.csv'
+    ponderacion += _ponderacionUltimoRegistro(ruta, v1ponderacionesTirosJugador)
+
+    return ponderacion
 

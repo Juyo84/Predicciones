@@ -1,4 +1,5 @@
 import Datos as datos
+import Predicciones as prediccion
 from datetime import datetime
 from os import system
 import time
@@ -33,7 +34,7 @@ def _menu(estadoActualizacion: bool):
         
     if seleccion == '1' or seleccion.lower() == 'prediccion' or seleccion.lower() == 'pre':
 
-        input()
+        _prediccion()
 
     elif seleccion == '2' or seleccion.lower() == 'automatico' or seleccion.lower() == 'auto':
 
@@ -95,6 +96,82 @@ def _actualizar() -> bool:
     time.sleep(2)
 
     return True
+
+
+def _prediccion():
+    
+    fecha: datetime = datetime.now()
+    fechaMostrar = fecha.strftime('%d-%m-%Y')
+
+    verificar = False
+
+    while not verificar:
+
+        system("cls")
+
+        print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+        print("Equipo de Casa:")
+
+        casa = datos.equipos(input(), 1)
+
+        system("cls")
+
+        if casa == 'Otro':
+
+            print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+            print("\t\tNo se encontro el equipo...")
+
+            time.sleep(1)
+            
+        else:
+
+            verificar = True
+
+    verificar = False
+
+    while not verificar:
+        
+        system("cls")
+
+        print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+        print("Equipo de Visitante:")
+
+        visitante = datos.equipos(input(), 1)
+
+        system("cls")
+
+        if visitante == 'Otro':
+
+            print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+            print("\t\tNo se encontro el equipo...")
+
+            time.sleep(1)
+
+        elif visitante == casa:
+
+            print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+            print("\t\tEquipo asginado en Casa...")
+
+            time.sleep(1)
+
+        else:
+
+            verificar = True
+
+    print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tHaciendo calculos...")
+
+    resultado = prediccion.prediccion(casa, visitante)
+
+    system("cls")
+
+    ganador = datos.equipos(resultado[0], 0)
+    puntaje = str(round(resultado[1], 4))
+
+    print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tGanador: " + ganador + "\n\t\tPuntaje: " + puntaje)
+
+    input()
 
 
 def _listaPredicciones():

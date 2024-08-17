@@ -4,18 +4,27 @@ def prediccion(equipoCasa: str, equipoVisitante: str) -> tuple:
 
     diferencia: float
 
+    casa = 0
+    visitante = 0
+
     totalCasa = ponderacion.totalPonderacionEquipo(equipoCasa)
     totalVisitante = ponderacion.totalPonderacionEquipo(equipoVisitante)
 
-    if totalCasa > totalVisitante:
+    totalJugadoresCasa = ponderacion.totalPonderacionJugadores(equipoCasa)
+    totalJugadoresVisitante = ponderacion.totalPonderacionJugadores(equipoVisitante)
 
-        diferencia = totalCasa - totalVisitante
+    casa += totalCasa + totalJugadoresCasa
+    visitante += totalVisitante + totalJugadoresVisitante
+
+    if casa > visitante:
+
+        diferencia = casa - visitante
 
         return (equipoCasa, diferencia)
 
-    elif totalVisitante > totalCasa:
+    elif visitante > casa:
 
-        diferencia = totalVisitante - totalCasa
+        diferencia = visitante - casa
 
         return (equipoVisitante, diferencia)
     

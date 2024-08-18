@@ -1,6 +1,8 @@
 import Ponderaciones as ponderacion
 import Datos as datos
 from datetime import datetime
+import pandas as pd
+import os
 
 def prediccion(fecha: datetime, equipoCasa: str, equipoVisitante: str) -> tuple:
 
@@ -39,4 +41,27 @@ def prediccion(fecha: datetime, equipoCasa: str, equipoVisitante: str) -> tuple:
     
     return ganador
 
+
+def prediccionAutomatica(fechaActual: datetime) -> bool:
+
+    rutaCalendario = 'Datos//Equipos//General//Calendario_.csv'
+
+    if os.path.exists(rutaCalendario):
+
+        dfPartidos: pd.DataFrame = pd.read_csv(rutaCalendario)
+
+        for partido in range(0, len(dfPartidos), 1):
+        
+            fecha = dfPartidos.values[partido][0]
+            casa = dfPartidos.values[partido][2]
+            visitante = dfPartidos.values[partido][3]
+
+            prediccion(fecha, casa, visitante)
+
+        return True
+
+    else:
+
+        return False
+    
 

@@ -38,7 +38,7 @@ def _menu(estadoActualizacion: bool):
 
     elif seleccion == '2' or seleccion.lower() == 'automatico' or seleccion.lower() == 'auto':
 
-        input()
+        _prediccionAutomatica()
 
     elif seleccion == '3' or seleccion.lower() == 'lista' or seleccion.lower() == 'lis':
 
@@ -74,7 +74,8 @@ def _actualizar() -> bool:
     
     print("ACTUALIZACION DE DATOS\t\tFecha: " + fechaMostrar + "\n")
     print("\t\tActualizando datos...")
-    
+    datos.obtenerDatosGenerales(fechaMostrar)
+
     try:
     
         datos.obtenerDatosGenerales(fechaMostrar)
@@ -161,7 +162,7 @@ def _prediccion():
     print("PREDICCION\t\tFecha: " + fechaMostrar + "\n")
     print("\t\tHaciendo calculos...")
 
-    resultado = prediccion.prediccion(fechaMostrar, casa, visitante)
+    resultado = prediccion.prediccion(fecha, casa, visitante)
 
     system("cls")
 
@@ -172,6 +173,30 @@ def _prediccion():
     print("\t\tGanador: " + ganador + "\n\t\tPuntaje: " + puntaje)
 
     input()
+
+
+def _prediccionAutomatica():
+
+    fecha: datetime = datetime.now()
+    fechaMostrar = fecha.strftime('%d-%m-%Y')
+
+    system("cls")
+
+    print("PREDICCION AUTOMATICA\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tPrediciendo partidos...")
+
+    prediccion.prediccionAutomatica(fecha)
+
+    system("cls")
+
+    print("PREDICCION AUTOMATICA\t\tFecha: " + fechaMostrar + "\n")
+    print("\t\tPartidos predecidos")
+
+    time.sleep(2)
+
+    _listaPredicciones()
+
+    return
 
 
 def _listaPredicciones():
@@ -208,17 +233,19 @@ def inicio():
 
     res = input()
 
-    if res.lower() == '1' or res.lower() == 'si':
+    if res.lower() == '1' or res.lower() == 'si' or res.lower() == 's':
 
         estadoActualizacion: bool = _actualizar()
         _menu(estadoActualizacion)
 
-    elif res.lower() == '2' or res.lower() == 'no':
+    elif res.lower() == '2' or res.lower() == 'no' or res.lower() == 'n':
 
         _menu(False)
 
     else:
         
+        system("cls")
+
         print("\t\tSELECCIONE UNA OPCION\n")
         time.sleep(2)
         

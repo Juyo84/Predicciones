@@ -207,6 +207,45 @@ def _responseCalendario(ruta: str) -> pd.DataFrame:
     return pd.DataFrame
 
 
+def _guardarCasaApuestas(response: Response, rutaArchivo: str) -> pd.DataFrame:
+
+    ruta = 'Datos//' + rutaArchivo + '.csv'
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    datosRow = []
+
+    apuestasActivas = soup.find('table').find_all('tr')
+
+    for apuesta in apuestasActivas:
+
+        fecha = apuesta.find('span', class_='date').text
+        hora = apuesta.find('span', class_='time').text
+        equipoCasa = apuesta.find_all('span', class_='seln-name')[0].text
+        apuestaCasa = apuesta.find_all('span', class_='price dec')[0].text
+        equipoVisitante = apuesta.find_all('span', class_='seln-name')[1].text
+        apuestaVisitante = apuesta.find_all('span', class_='price dec')[2].text
+        
+        datoApuesta = {"Fecha": fecha, "Hora": hora, "Casa": equipoCasa, "Apuesta Casa": apuestaCasa, "Visitante": equipoVisitante, "Apuesta Visitante": apuestaVisitante}
+        datosRow.append(datoApuesta)
+
+    dfNuevo = pd.DataFrame(datosRow, columns=["Fecha", "Hora", "Casa", "Apuesta Casa", "Visitante", "Apuesta Visitante"])
+    dfNuevo.to_csv(ruta, index=False, encoding='utf-8-sig')
+
+    return
+
+
+def _responseCasaApuestas(rutaArchivo: str, rutaCasaApuesta: str) -> pd.DataFrame:
+
+    response = requests.get(rutaCasaApuesta)
+
+    if(_verificarResponse(response)):
+
+        dfGuardado = _guardarCasaApuestas(response, rutaArchivo)
+        return dfGuardado
+
+    return pd.DataFrame
+
+
 def _responseEstadisticaAvzJugadores(ruta: str, fechaGuardado: datetime) -> pd.DataFrame:
 
     url = 'https://www.rincondelmanager.com/smgr/avanzadas.php'
@@ -509,6 +548,12 @@ def obtenerDatosGenerales(fechaGuardado: str) -> bool:
     
     ruta = 'Equipos//General//Calendario_'
     _responseCalendario(ruta)
+
+    ruta = 'CasasApuestas//Codere_'
+    _responseCasaApuestas(ruta, 'https://apuestas.codere.mx/es_MX/t/50618/Leagues-Cup')
+
+    ruta = 'CasasApuestas//Caliente_'
+    _responseCasaApuestas(ruta, 'https://sports.caliente.mx/es_MX/t/29935/Leagues-Cup')
 
     ruta = ''
     #_responseLesionados()

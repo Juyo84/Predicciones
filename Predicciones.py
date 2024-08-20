@@ -15,11 +15,14 @@ def prediccion(fecha: datetime, equipoCasa: str, equipoVisitante: str) -> tuple:
     totalCasa = ponderacion.totalPonderacionEquipo(equipoCasa)
     totalVisitante = ponderacion.totalPonderacionEquipo(equipoVisitante)
 
-    totalJugadoresCasa = ponderacion.totalPonderacionJugadores(equipoCasa)
-    totalJugadoresVisitante = ponderacion.totalPonderacionJugadores(equipoVisitante)
+    #totalJugadoresCasa = ponderacion.totalPonderacionJugadores(equipoCasa)
+    #totalJugadoresVisitante = ponderacion.totalPonderacionJugadores(equipoVisitante)
 
-    casa += totalCasa + totalJugadoresCasa
-    visitante += totalVisitante + totalJugadoresVisitante
+    #casa += totalCasa + totalJugadoresCasa
+    #visitante += totalVisitante + totalJugadoresVisitante
+
+    casa = totalCasa
+    visitante = totalVisitante
 
     if casa > visitante:
 

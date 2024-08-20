@@ -97,11 +97,11 @@ def totalPonderacionJugadores(equipo: str) -> float:
     ponderacion: float = 0
     ruta: str = ''
 
-    ruta = 'Datos//Jugadores//Jugador//EstadisticaAvanzadaJugadores_.csv'
-    ponderacion += _ponderacionUltimoRegistro(ruta, v1ponderacionesEstadisticaAvanzadaJugadores)
+    ruta = 'Datos//Jugadores//General//EstadisticaAvanzadaJugadores_.csv'
+    ponderacion += _ponderacionUltimoRegistroJugador(equipo, 'Eq', v1ponderacionesEstadisticaAvanzadaJugadores, ruta)
     
-    ruta = 'Datos//Jugadores//Jugador//TirosJugadores_.csv'
-    ponderacion += _ponderacionUltimoRegistro(ruta, v1ponderacionesTirosJugador)
+    ruta = 'Datos//Jugadores//General//TirosJugadores_.csv'
+    ponderacion += _ponderacionUltimoRegistroJugador(equipo, 'Eq', v1ponderacionesTirosJugador, ruta)
 
     return ponderacion
 
